@@ -1,0 +1,44 @@
+{
+	"kind": "collectionType",
+	"collectionName": "auditlogs",
+	"info": {
+		"singularName": "auditlog",
+		"pluralName": "auditlogs",
+		"displayName": "AuditLog"
+	},
+	"options": {
+		"draftAndPublish": false,
+		"comment": ""
+	},
+	"pluginOptions": {
+		"content-manager": {
+			"visible": false
+		},
+		"content-type-builder": {
+			"visible": false
+		}
+	},
+	"attributes": {
+		"contentType": {
+			"type": "text"
+		},
+		"action": {
+			"type": "text"
+		},
+		"content": {
+			"type": "json"
+		},
+		"author": {
+			"type": "json"
+		},
+		"request": {
+			"type": "json"
+		},
+		"method": {
+			"type": "text"
+		},
+		"params": {
+			"type": "json"
+		}
+	}
+}
