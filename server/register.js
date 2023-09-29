@@ -1,5 +1,7 @@
 'use strict';
 
+// const Logger = require('./utils/logger');
+
 module.exports = ({ strapi }) => {
 	// Ensure we have at least one model before attempting to attach lifecycles
 	if (!Object.keys(strapi.contentTypes).length) {
@@ -29,51 +31,98 @@ module.exports = ({ strapi }) => {
 
 		strapi.contentType(entity).lifecycles = {
 			...lifecycles,
-			afterCreate: async (event) => {
-				if (lifecycles.afterCreate) await lifecycles.afterCreate(event);
+			beforeCreate: async (event) => {
+				if (lifecycles.beforeCreate) await lifecycles.beforeCreate(event);
+
+				const ctx = strapi.requestContext.get();
+				const currentUser = ctx?.state?.user;
+
+				const author = {
+					id: currentUser.id,
+					username: currentUser.username,
+					email: currentUser.email,
+					firstname: currentUser.firstname,
+					lastname: currentUser.lastname,
+					createAt: currentUser.createdAt,
+				};
 
 				strapi.log.warn(`Audit Logger: ${ContentTypeName} created`);
-				const { result, params } = event;
-				await strapi.entityService.create('plugin::audit-logger.auditlog', {
-					data: {
-						action: 'Create',
-						contentType: `${ContentTypeName}`,
-						author: result.createdBy,
-						params: params,
-						request: event,
-						content: result.Content,
-					},
-				});
+
+				if (currentUser) {
+					await strapi.entityService.create('plugin::audit-logger.auditlog', {
+						data: {
+							action: 'Create',
+							contentType: `${ContentTypeName}`,
+							author,
+							dataAfterAction: event.params.data,
+						},
+					});
+				}
 			},
-			afterUpdate: async (event) => {
-				if (lifecycles.afterUpdate) await lifecycles.afterUpdate(event);
+			beforeUpdate: async (event) => {
+				if (lifecycles.beforeUpdate) await lifecycles.beforeUpdate(event);
+
+				const ctx = strapi.requestContext.get();
+				const currentUser = ctx?.state?.user;
+
+				const author = {
+					id: currentUser.id,
+					username: currentUser.username,
+					email: currentUser.email,
+					firstname: currentUser.firstname,
+					lastname: currentUser.lastname,
+					createAt: currentUser.createdAt,
+				};
+
 				strapi.log.warn(`Audit Logger: ${ContentTypeName} updated`);
-				const { result, params } = event;
-				await strapi.entityService.create('plugin::audit-logger.auditlog', {
-					data: {
-						action: 'Update',
-						contentType: `${ContentTypeName}`,
-						author: result.createdBy,
-						params: params,
-						request: event,
-						content: result.Content,
-					},
-				});
+
+				if (currentUser) {
+					const updatedRecord = await strapi.entityService.findOne(
+						event.model.uid,
+						event.params.where.id
+					);
+					await strapi.entityService.create('plugin::audit-logger.auditlog', {
+						data: {
+							action: 'Update',
+							contentType: `${ContentTypeName}`,
+							author,
+							dataBeforeAction: updatedRecord,
+							dataAfterAction: event.params.data,
+						},
+					});
+				}
 			},
-			afterDelete: async (event) => {
-				if (lifecycles.afterDelete) await lifecycles.afterDelete(event);
+			beforeDelete: async (event) => {
+				if (lifecycles.beforeDelete) await lifecycles.beforeDelete(event);
+
+				const ctx = strapi.requestContext.get();
+				const currentUser = ctx?.state?.user;
+
+				const author = {
+					id: currentUser.id,
+					username: currentUser.username,
+					email: currentUser.email,
+					firstname: currentUser.firstname,
+					lastname: currentUser.lastname,
+					createAt: currentUser.createdAt,
+				};
+
 				strapi.log.warn(`Audit Logger: ${ContentTypeName} deleted`);
-				const { result, params } = event;
-				await strapi.entityService.create('plugin::audit-logger.auditlog', {
-					data: {
-						action: 'Delete',
-						contentType: `${ContentTypeName}`,
-						author: result.createdBy,
-						params: params,
-						request: event,
-						content: result.Content,
-					},
-				});
+				if (currentUser) {
+					const deletedRecord = await strapi.entityService.findOne(
+						event.model.uid,
+						event.params.where.id
+					);
+
+					await strapi.entityService.create('plugin::audit-logger.auditlog', {
+						data: {
+							action: 'Delete',
+							contentType: `${ContentTypeName}`,
+							author,
+							dataBeforeAction: deletedRecord,
+						},
+					});
+				}
 			},
 		};
 	});
