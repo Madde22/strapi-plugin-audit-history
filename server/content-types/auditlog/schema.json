@@ -25,19 +25,13 @@
 		"action": {
 			"type": "text"
 		},
-		"content": {
-			"type": "json"
-		},
 		"author": {
 			"type": "json"
 		},
-		"request": {
+		"dataBeforeAction": {
 			"type": "json"
 		},
-		"method": {
-			"type": "text"
-		},
-		"params": {
+		"dataAfterAction": {
 			"type": "json"
 		}
 	}
