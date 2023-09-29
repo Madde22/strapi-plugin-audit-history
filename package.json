@@ -4,7 +4,7 @@
 	"version": "1.0.0",
 	"description": "A plugin to log all the actions performed on the content types",
 	"strapi": {
-		"name": "Audit Logger",
+		"name": "audit-logger",
 		"description": "A plugin to log all the actions performed on the content types",
 		"kind": "plugin",
 		"displayName": "Audit Logger"
