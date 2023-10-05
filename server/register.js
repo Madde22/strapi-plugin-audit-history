@@ -32,96 +32,108 @@ module.exports = ({ strapi }) => {
 		strapi.contentType(entity).lifecycles = {
 			...lifecycles,
 			beforeCreate: async (event) => {
-				if (lifecycles.beforeCreate) await lifecycles.beforeCreate(event);
+				try {
+					if (lifecycles.beforeCreate) await lifecycles.beforeCreate(event);
 
-				const ctx = strapi.requestContext.get();
-				const currentUser = ctx?.state?.user;
+					const ctx = strapi.requestContext.get();
+					const currentUser = ctx?.state?.user;
 
-				const author = {
-					id: currentUser.id,
-					username: currentUser.username,
-					email: currentUser.email,
-					firstname: currentUser.firstname,
-					lastname: currentUser.lastname,
-					createAt: currentUser.createdAt,
-				};
+					const author = {
+						id: currentUser.id,
+						username: currentUser.username,
+						email: currentUser.email,
+						firstname: currentUser.firstname,
+						lastname: currentUser.lastname,
+						createAt: currentUser.createdAt,
+					};
 
-				strapi.log.warn(`Audit Logger: ${ContentTypeName} created`);
+					strapi.log.warn(`Audit Logger: ${ContentTypeName} created`);
 
-				if (currentUser) {
-					await strapi.entityService.create('plugin::audit-logger.auditlog', {
-						data: {
-							action: 'Create',
-							contentType: `${ContentTypeName}`,
-							author,
-							dataAfterAction: event.params.data,
-						},
-					});
+					if (currentUser) {
+						await strapi.entityService.create('plugin::audit-logger.auditlog', {
+							data: {
+								action: 'Create',
+								contentType: `${ContentTypeName}`,
+								author,
+								dataAfterAction: event.params.data,
+							},
+						});
+					}
+				} catch (error) {
+					strapi.log.error(`Audit Logger: ${error.message}`);
 				}
 			},
 			beforeUpdate: async (event) => {
-				if (lifecycles.beforeUpdate) await lifecycles.beforeUpdate(event);
+				try {
+					if (lifecycles.beforeUpdate) await lifecycles.beforeUpdate(event);
 
-				const ctx = strapi.requestContext.get();
-				const currentUser = ctx?.state?.user;
+					const ctx = strapi.requestContext.get();
+					const currentUser = ctx?.state?.user;
 
-				const author = {
-					id: currentUser.id,
-					username: currentUser.username,
-					email: currentUser.email,
-					firstname: currentUser.firstname,
-					lastname: currentUser.lastname,
-					createAt: currentUser.createdAt,
-				};
+					const author = {
+						id: currentUser.id,
+						username: currentUser.username,
+						email: currentUser.email,
+						firstname: currentUser.firstname,
+						lastname: currentUser.lastname,
+						createAt: currentUser.createdAt,
+					};
 
-				strapi.log.warn(`Audit Logger: ${ContentTypeName} updated`);
+					strapi.log.warn(`Audit Logger: ${ContentTypeName} updated`);
 
-				if (currentUser) {
-					const updatedRecord = await strapi.entityService.findOne(
-						event.model.uid,
-						event.params.where.id
-					);
-					await strapi.entityService.create('plugin::audit-logger.auditlog', {
-						data: {
-							action: 'Update',
-							contentType: `${ContentTypeName}`,
-							author,
-							dataBeforeAction: updatedRecord,
-							dataAfterAction: event.params.data,
-						},
-					});
+					if (currentUser) {
+						const updatedRecord = await strapi.entityService.findOne(
+							event.model.uid,
+							event.params.where.id
+						);
+						await strapi.entityService.create('plugin::audit-logger.auditlog', {
+							data: {
+								action: 'Update',
+								contentType: `${ContentTypeName}`,
+								author,
+								dataBeforeAction: updatedRecord,
+								dataAfterAction: event.params.data,
+							},
+						});
+					}
+				} catch (error) {
+					strapi.log.error(`Audit Logger: ${error.message}`);
 				}
 			},
 			beforeDelete: async (event) => {
-				if (lifecycles.beforeDelete) await lifecycles.beforeDelete(event);
+				try {
+					if (lifecycles.beforeDelete) await lifecycles.beforeDelete(event);
 
-				const ctx = strapi.requestContext.get();
-				const currentUser = ctx?.state?.user;
+					const ctx = strapi.requestContext.get();
+					const currentUser = ctx?.state?.user;
 
-				const author = {
-					id: currentUser.id,
-					username: currentUser.username,
-					email: currentUser.email,
-					firstname: currentUser.firstname,
-					lastname: currentUser.lastname,
-					createAt: currentUser.createdAt,
-				};
+					const author = {
+						id: currentUser.id,
+						username: currentUser.username,
+						email: currentUser.email,
+						firstname: currentUser.firstname,
+						lastname: currentUser.lastname,
+						createAt: currentUser.createdAt,
+					};
 
-				strapi.log.warn(`Audit Logger: ${ContentTypeName} deleted`);
-				if (currentUser) {
-					const deletedRecord = await strapi.entityService.findOne(
-						event.model.uid,
-						event.params.where.id
-					);
+					strapi.log.warn(`Audit Logger: ${ContentTypeName} deleted`);
+					if (currentUser) {
+						const deletedRecord = await strapi.entityService.findOne(
+							event.model.uid,
+							event.params.where.id
+						);
 
-					await strapi.entityService.create('plugin::audit-logger.auditlog', {
-						data: {
-							action: 'Delete',
-							contentType: `${ContentTypeName}`,
-							author,
-							dataBeforeAction: deletedRecord,
-						},
-					});
+						await strapi.entityService.create('plugin::audit-logger.auditlog', {
+							data: {
+								action: 'Delete',
+								contentType: `${ContentTypeName}`,
+								author,
+								dataBeforeAction: deletedRecord,
+							},
+						});
+					}
+				} catch (error) {
+					strapi.log.error(`Audit Logger: ${error.message}`);
 				}
 			},
 		};
