@@ -38,18 +38,17 @@ module.exports = ({ strapi }) => {
 					const ctx = strapi.requestContext.get();
 					const currentUser = ctx?.state?.user;
 
-					const author = {
-						id: currentUser.id,
-						username: currentUser.username,
-						email: currentUser.email,
-						firstname: currentUser.firstname,
-						lastname: currentUser.lastname,
-						createAt: currentUser.createdAt,
-					};
-
 					strapi.log.warn(`Audit Logger: ${ContentTypeName} created`);
 
 					if (currentUser) {
+						const author = {
+							id: currentUser.id,
+							username: currentUser.username,
+							email: currentUser.email,
+							firstname: currentUser.firstname,
+							lastname: currentUser.lastname,
+							createAt: currentUser.createdAt,
+						};
 						await strapi.entityService.create('plugin::audit-logger.auditlog', {
 							data: {
 								action: 'Create',
@@ -70,18 +69,17 @@ module.exports = ({ strapi }) => {
 					const ctx = strapi.requestContext.get();
 					const currentUser = ctx?.state?.user;
 
-					const author = {
-						id: currentUser.id,
-						username: currentUser.username,
-						email: currentUser.email,
-						firstname: currentUser.firstname,
-						lastname: currentUser.lastname,
-						createAt: currentUser.createdAt,
-					};
-
 					strapi.log.warn(`Audit Logger: ${ContentTypeName} updated`);
 
 					if (currentUser) {
+						const author = {
+							id: currentUser.id,
+							username: currentUser.username,
+							email: currentUser.email,
+							firstname: currentUser.firstname,
+							lastname: currentUser.lastname,
+							createAt: currentUser.createdAt,
+						};
 						const updatedRecord = await strapi.entityService.findOne(
 							event.model.uid,
 							event.params.where.id
@@ -107,17 +105,16 @@ module.exports = ({ strapi }) => {
 					const ctx = strapi.requestContext.get();
 					const currentUser = ctx?.state?.user;
 
-					const author = {
-						id: currentUser.id,
-						username: currentUser.username,
-						email: currentUser.email,
-						firstname: currentUser.firstname,
-						lastname: currentUser.lastname,
-						createAt: currentUser.createdAt,
-					};
-
 					strapi.log.warn(`Audit Logger: ${ContentTypeName} deleted`);
 					if (currentUser) {
+						const author = {
+							id: currentUser.id,
+							username: currentUser.username,
+							email: currentUser.email,
+							firstname: currentUser.firstname,
+							lastname: currentUser.lastname,
+							createAt: currentUser.createdAt,
+						};
 						const deletedRecord = await strapi.entityService.findOne(
 							event.model.uid,
 							event.params.where.id
